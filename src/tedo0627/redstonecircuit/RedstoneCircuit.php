@@ -3,8 +3,8 @@
 namespace tedo0627\redstonecircuit;
 
 use pocketmine\plugin\PluginBase;
-use tedo0627\redstonecircuit\block\BlockRedstone;
-use tedo0627\redstonecircuit\block\BlockRedstoneWire;
+use tedo0627\redstonecircuit\block\power\BlockRedstone;
+use tedo0627\redstonecircuit\block\transmission\BlockRedstoneWire;
 
 class RedstoneCircuit extends PluginBase {
 

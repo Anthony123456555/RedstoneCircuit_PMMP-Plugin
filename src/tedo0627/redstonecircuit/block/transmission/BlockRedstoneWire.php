@@ -1,17 +1,17 @@
 <?php
 
-namespace tedo0627\redstonecircuit\block;
+namespace tedo0627\redstonecircuit\block\transmission;
 
 use pocketmine\block\Block;
 use pocketmine\block\Flowable;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use tedo0627\redstonecircuit\block\helper\BlockPowerHelper;
-use tedo0627\redstonecircuit\block\helper\FlowablePlaceTrait;
-use tedo0627\redstonecircuit\block\helper\IRedstoneComponent;
-use tedo0627\redstonecircuit\block\helper\RedstoneComponentTrait;
-use tedo0627\redstonecircuit\block\helper\RedstoneUpdateTrait;
+use tedo0627\redstonecircuit\block\BlockPowerHelper;
+use tedo0627\redstonecircuit\block\FlowablePlaceTrait;
+use tedo0627\redstonecircuit\block\IRedstoneComponent;
+use tedo0627\redstonecircuit\block\RedstoneComponentTrait;
+use tedo0627\redstonecircuit\block\RedstoneUpdateTrait;
 use tedo0627\redstonecircuit\Facing;
 
 class BlockRedstoneWire extends Flowable implements IRedstoneComponent {

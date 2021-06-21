@@ -1,6 +1,6 @@
 <?php
 
-namespace tedo0627\redstonecircuit\block\helper;
+namespace tedo0627\redstonecircuit\block;
 
 interface IRedstoneComponent {
 

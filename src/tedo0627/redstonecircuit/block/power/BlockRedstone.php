@@ -1,15 +1,15 @@
 <?php
 
-namespace tedo0627\redstonecircuit\block;
+namespace tedo0627\redstonecircuit\block\power;
 
 use pocketmine\block\Block;
 use pocketmine\block\Redstone;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
-use tedo0627\redstonecircuit\block\helper\IRedstoneComponent;
-use tedo0627\redstonecircuit\block\helper\RedstoneComponentTrait;
-use tedo0627\redstonecircuit\block\helper\RedstoneUpdateTrait;
+use tedo0627\redstonecircuit\block\IRedstoneComponent;
+use tedo0627\redstonecircuit\block\RedstoneComponentTrait;
+use tedo0627\redstonecircuit\block\RedstoneUpdateTrait;
 
 class BlockRedstone extends Redstone implements IRedstoneComponent {
     use RedstoneComponentTrait;
