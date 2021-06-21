@@ -57,10 +57,6 @@ class BlockRedstoneWire extends Flowable implements IRedstoneComponent, IRedston
         }
     }
 
-    public function getStrongPower(int $face): int {
-        return $this->getDamage();
-    }
-
     public function getWeakPower(int $face): int {
         return $this->getDamage();
     }

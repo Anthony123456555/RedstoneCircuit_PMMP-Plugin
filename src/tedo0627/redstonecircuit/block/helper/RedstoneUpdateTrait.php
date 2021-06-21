@@ -24,7 +24,7 @@ trait RedstoneUpdateTrait {
             if ($face != null && $face == $direction) continue;
 
             $block = $this->level->getBlock($pos->getSide($direction));
-            if ($block instanceof RedstoneComponentTrait) $block->onRedstoneUpdate();
+            if ($block instanceof IRedstoneComponent) $block->onRedstoneUpdate();
         }
     }
 
