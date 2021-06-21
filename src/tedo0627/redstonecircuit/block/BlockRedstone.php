@@ -8,11 +8,10 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
 use tedo0627\redstonecircuit\block\helper\IRedstoneComponent;
-use tedo0627\redstonecircuit\block\helper\IRedstoneUpdate;
 use tedo0627\redstonecircuit\block\helper\RedstoneComponentTrait;
 use tedo0627\redstonecircuit\block\helper\RedstoneUpdateTrait;
 
-class BlockRedstone extends Redstone implements IRedstoneComponent, IRedstoneUpdate {
+class BlockRedstone extends Redstone implements IRedstoneComponent {
     use RedstoneComponentTrait;
     use RedstoneUpdateTrait;
 

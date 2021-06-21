@@ -10,12 +10,11 @@ use pocketmine\Player;
 use tedo0627\redstonecircuit\block\helper\BlockPowerHelper;
 use tedo0627\redstonecircuit\block\helper\FlowablePlaceTrait;
 use tedo0627\redstonecircuit\block\helper\IRedstoneComponent;
-use tedo0627\redstonecircuit\block\helper\IRedstoneUpdate;
 use tedo0627\redstonecircuit\block\helper\RedstoneComponentTrait;
 use tedo0627\redstonecircuit\block\helper\RedstoneUpdateTrait;
 use tedo0627\redstonecircuit\Facing;
 
-class BlockRedstoneWire extends Flowable implements IRedstoneComponent, IRedstoneUpdate {
+class BlockRedstoneWire extends Flowable implements IRedstoneComponent {
     use FlowablePlaceTrait;
     use RedstoneComponentTrait;
     use RedstoneUpdateTrait;

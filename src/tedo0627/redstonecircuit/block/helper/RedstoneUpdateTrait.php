@@ -7,9 +7,6 @@ use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use tedo0627\redstonecircuit\Facing;
 
-/**
- * @see IRedstoneUpdate
- */
 trait RedstoneUpdateTrait {
 
     /** @var Level|null */
