@@ -35,7 +35,7 @@ class BlockRedstoneWire extends Flowable implements IRedstoneComponent {
     }
 
     public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool {
-        if (!$this->canPlaceFlowable()) return false;
+        if (!$this->canPlaceFlowable(Facing::DOWN)) return false;
 
         $bool = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
         $this->calculatePower();
@@ -49,7 +49,7 @@ class BlockRedstoneWire extends Flowable implements IRedstoneComponent {
     }
 
     public function onNearbyBlockChange() : void {
-        if ($this->canPlaceFlowable()) {
+        if ($this->canPlaceFlowable(Facing::DOWN)) {
             $this->calculatePower();
         } else {
             $this->level->useBreakOn($this);
