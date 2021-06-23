@@ -2,9 +2,13 @@
 
 namespace tedo0627\redstonecircuit\block\power;
 
+use LogicException;
 use pocketmine\block\Block;
 use pocketmine\block\WoodenButton;
+use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Arrow;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
@@ -23,45 +27,88 @@ class BlockWoodenButton extends WoodenButton implements IRedstoneComponent {
         if (!$this->canPlaceFlowable(Facing::opposite($face))) return false;
 
         $bool = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-        $this->updateAroundRedstone($this);
+        $this->updateAroundDiodeRedstone($this);
         return $bool;
     }
 
     public function onBreak(Item $item, Player $player = null): bool {
         $bool = parent::onBreak($item, $player);
-        $this->updateAroundRedstone($this);
+        $this->updateAroundDiodeRedstone($this);
         return $bool;
     }
 
     public function onNearbyBlockChange(): void {
         if ($this->canPlaceFlowable($this->getFace())) return;
-        $this->level->useBreakOn($this);
+        $this->getLevel()->useBreakOn($this);
     }
 
     public function onScheduledUpdate(): void {
         if (!$this->isPowerSource()) return;
 
-        $this->setDamage($this->getDamage() - 8);
-        $this->level->setBlock($this, $this);
-        $this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_POWER_OFF);
-        $this->updateAroundDiodeRedstone($this);
+        $entities = $this->getLevel()->getNearbyEntities($this->getCollisionBoundingBox());
+        foreach ($entities as $entitiy) {
+            if ($entitiy instanceof Arrow) return;
+        }
+
+        $this->toggleButton(false);
     }
 
     public function onActivate(Item $item, Player $player = null): bool {
         if ($this->isPowerSource()) return true;
 
-        $this->setDamage($this->getDamage() + 8);
-        $this->level->setBlock($this, $this);
-        $this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_POWER_ON);
-        $this->updateAroundDiodeRedstone($this);
-        $this->level->scheduleDelayedBlockUpdate($this, 30);
+        $this->toggleButton(true);
+        $this->getLevel()->scheduleDelayedBlockUpdate($this, 30);
+        return true;
+    }
+
+    public function onEntityCollide(Entity $entity): void {
+        if (!($entity instanceof Arrow)) return;
+        if (!$this->getCollisionBoundingBox()->intersectsWith($entity->getBoundingBox())) return;
+
+        if (!$this->isPowerSource()) $this->toggleButton(true);
+        $this->getLevel()->scheduleDelayedBlockUpdate($this, 1);
+    }
+
+    public function hasEntityCollision(): bool {
         return true;
     }
 
     private function getFace(): int {
         $damage = $this->getDamage();
-        if ($damage > 8) $damage -= 8;
+        if (8 <= $damage) $damage -= 8;
         return Facing::opposite($damage);
+    }
+
+    private function toggleButton(bool $toggle): void {
+        $damage = $this->getDamage();
+        if ($toggle && $damage < 8) $this->setDamage($damage + 8);
+        if (!$toggle && 8 <= $damage) $this->setDamage($damage - 8);
+
+        $this->getLevel()->setBlock($this, $this);
+        $soundId = $toggle ? LevelSoundEventPacket::SOUND_POWER_ON : LevelSoundEventPacket::SOUND_POWER_OFF;
+        $this->getLevel()->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), $soundId);
+        $this->updateAroundDiodeRedstone($this);
+    }
+
+    protected function getCollisionBoundingBox(): AxisAlignedBB {
+        $bb = null;
+        $face = Facing::opposite($this->getFace());
+        if ($face == Facing::UP) {
+            $bb = new AxisAlignedBB(6.0, 0.0, 5.0, 10.0, 2.0, 11.0);
+        } else if ($face == Facing::DOWN) {
+            $bb = new AxisAlignedBB(6.0, 14.0, 5.0, 10.0, 16.0, 11.0);
+        } else if ($face == Facing::NORTH) {
+            $bb = new AxisAlignedBB(5.0, 6.0, 14.0, 11.0, 10.0, 16.0);
+        } else if ($face == Facing::SOUTH) {
+            $bb = new AxisAlignedBB(5.0, 6.0, 0.0, 11.0, 10.0, 2.0);
+        } else if ($face == Facing::WEST) {
+            $bb = new AxisAlignedBB(14.0, 6.0, 5.0, 16.0, 10.0, 11.0);
+        } else if ($face == Facing::EAST) {
+            $bb = new AxisAlignedBB(0.0, 6.0, 5.0, 2.0, 10.0, 11.0);
+        }
+        if ($bb == null) throw new LogicException("face " . $face . " isn't match");
+        $bb->setBounds($bb->minX / 16, $bb->minY / 16, $bb->minZ / 16, $bb->maxX / 16, $bb->maxY / 16, $bb->maxZ / 16);
+        return $bb->offset($this->getX(), $this->getY(), $this->getZ());
     }
 
     public function getStrongPower(int $face): int {
@@ -73,6 +120,6 @@ class BlockWoodenButton extends WoodenButton implements IRedstoneComponent {
     }
 
     public function isPowerSource(): bool {
-        return $this->getDamage() > 8;
+        return 8 <= $this->getDamage();
     }
 }

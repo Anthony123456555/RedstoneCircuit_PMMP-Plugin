@@ -23,45 +23,50 @@ class BlockStoneButton extends StoneButton implements IRedstoneComponent {
         if (!$this->canPlaceFlowable(Facing::opposite($face))) return false;
 
         $bool = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-        $this->updateAroundRedstone($this);
+        $this->updateAroundDiodeRedstone($this);
         return $bool;
     }
 
     public function onBreak(Item $item, Player $player = null): bool {
         $bool = parent::onBreak($item, $player);
-        $this->updateAroundRedstone($this);
+        $this->updateAroundDiodeRedstone($this);
         return $bool;
     }
 
     public function onNearbyBlockChange(): void {
         if ($this->canPlaceFlowable($this->getFace())) return;
-        $this->level->useBreakOn($this);
+        $this->getLevel()->useBreakOn($this);
     }
 
     public function onScheduledUpdate(): void {
         if (!$this->isPowerSource()) return;
 
-        $this->setDamage($this->getDamage() - 8);
-        $this->level->setBlock($this, $this);
-        $this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_POWER_OFF);
-        $this->updateAroundDiodeRedstone($this);
+        $this->toggleButton(false);
     }
 
     public function onActivate(Item $item, Player $player = null): bool {
         if ($this->isPowerSource()) return true;
 
-        $this->setDamage($this->getDamage() + 8);
-        $this->level->setBlock($this, $this);
-        $this->level->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), LevelSoundEventPacket::SOUND_POWER_ON);
-        $this->updateAroundDiodeRedstone($this);
-        $this->level->scheduleDelayedBlockUpdate($this, 20);
+        $this->toggleButton(true);
+        $this->getLevel()->scheduleDelayedBlockUpdate($this, 20);
         return true;
     }
 
     private function getFace(): int {
         $damage = $this->getDamage();
-        if ($damage > 8) $damage -= 8;
+        if (8 <= $damage) $damage -= 8;
         return Facing::opposite($damage);
+    }
+
+    private function toggleButton(bool $toggle): void {
+        $damage = $this->getDamage();
+        if ($toggle && $damage < 8) $this->setDamage($damage + 8);
+        if (!$toggle && 8 <= $damage) $this->setDamage($damage - 8);
+
+        $this->getLevel()->setBlock($this, $this);
+        $soundId = $toggle ? LevelSoundEventPacket::SOUND_POWER_ON : LevelSoundEventPacket::SOUND_POWER_OFF;
+        $this->getLevel()->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), $soundId);
+        $this->updateAroundDiodeRedstone($this);
     }
 
     public function getStrongPower(int $face): int {
@@ -73,6 +78,6 @@ class BlockStoneButton extends StoneButton implements IRedstoneComponent {
     }
 
     public function isPowerSource(): bool {
-        return $this->getDamage() > 8;
+        return 8 <= $this->getDamage();
     }
 }

@@ -52,7 +52,7 @@ class BlockRedstoneWire extends Flowable implements IRedstoneComponent {
         if ($this->canPlaceFlowable(Facing::DOWN)) {
             $this->calculatePower();
         } else {
-            $this->level->useBreakOn($this);
+            $this->getLevel()->useBreakOn($this);
         }
     }
 
@@ -114,7 +114,7 @@ class BlockRedstoneWire extends Flowable implements IRedstoneComponent {
         if ($this->getDamage() == $power) return;
 
         $this->setDamage($power);
-        $this->level->setBlock($this, $this);
+        $this->getLevel()->setBlock($this, $this);
         $this->updateAroundDiodeRedstone($this);
     }
 }
