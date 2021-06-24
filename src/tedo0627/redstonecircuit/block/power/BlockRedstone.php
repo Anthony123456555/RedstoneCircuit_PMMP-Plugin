@@ -17,13 +17,13 @@ class BlockRedstone extends Redstone implements IRedstoneComponent {
 
     public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null): bool {
         $bool = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-        $this->updateAroundRedstone($this);
+        $this->updateAroundRedstone();
         return $bool;
     }
 
     public function onBreak(Item $item, Player $player = null): bool {
         $bool = parent::onBreak($item, $player);
-        $this->updateAroundRedstone($this);
+        $this->updateAroundRedstone();
         return $bool;
     }
 

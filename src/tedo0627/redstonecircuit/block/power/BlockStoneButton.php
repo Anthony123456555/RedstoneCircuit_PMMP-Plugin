@@ -23,13 +23,13 @@ class BlockStoneButton extends StoneButton implements IRedstoneComponent {
         if (!$this->canPlaceFlowable(Facing::opposite($face))) return false;
 
         $bool = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-        $this->updateAroundDiodeRedstone($this);
+        $this->updateAroundDirectionRedstone($this->getFace());
         return $bool;
     }
 
     public function onBreak(Item $item, Player $player = null): bool {
         $bool = parent::onBreak($item, $player);
-        $this->updateAroundDiodeRedstone($this);
+        $this->updateAroundDirectionRedstone($this->getFace());
         return $bool;
     }
 
@@ -66,7 +66,7 @@ class BlockStoneButton extends StoneButton implements IRedstoneComponent {
         $this->getLevel()->setBlock($this, $this);
         $soundId = $toggle ? LevelSoundEventPacket::SOUND_POWER_ON : LevelSoundEventPacket::SOUND_POWER_OFF;
         $this->getLevel()->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), $soundId);
-        $this->updateAroundDiodeRedstone($this);
+        $this->updateAroundDirectionRedstone($this->getFace());
     }
 
     public function getStrongPower(int $face): int {

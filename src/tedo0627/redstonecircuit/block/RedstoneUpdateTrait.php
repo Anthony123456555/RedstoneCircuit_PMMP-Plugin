@@ -2,43 +2,65 @@
 
 namespace tedo0627\redstonecircuit\block;
 
-use LogicException;
+use pocketmine\block\Block;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
 use tedo0627\redstonecircuit\Facing;
 
 trait RedstoneUpdateTrait {
 
-    /** @var Level|null */
-    public $level;
+    /**
+     * Returns the target Level, or null if the target is not valid.
+     * If a reference exists to a Level which is closed, the reference will be destroyed and null will be returned.
+     *
+     * @return Level|null
+     */
+    public abstract function getLevel();
 
-    public function updateAroundRedstone(Vector3 $pos, ?int $face = null): void {
-        if ($this->level == null) throw new LogicException("Block's level property is null");
+    private function getBlock(): Block {
+        return $this instanceof Block ? $this : Block::get(0);
+    }
+
+    public function updateAroundRedstone(?int $ignoreDirection = null, Block $center = null): void {
+        if ($center == null) $center = $this->getBlock();
 
         $directions = Facing::ALL;
         for ($i = 0; $i < count($directions); $i++) {
             $direction = $directions[$i];
-            if ($face != null && $face == $direction) continue;
+            if ($ignoreDirection == $direction) continue;
 
-            $block = $this->level->getBlock($pos->getSide($direction));
+            $block = $center->getSide($direction);
             if ($block instanceof IRedstoneComponent) $block->onRedstoneUpdate();
         }
     }
 
-    public function updateAroundDiodeRedstone(Vector3 $pos, ?int $face = null): void {
-        $this->updateAroundRedstone($pos);
+    public function updateAroundDirectionRedstone(int $direction): void {
+        $this->updateAroundRedstone();
+        $this->updateAroundRedstone(Facing::opposite($direction), $this->getBlock()->getSide($direction));
+    }
+
+    public function updateAroundStrongRedstone(): void {
         $directions = Facing::ALL;
+        $center = $this->getBlock();
         for ($i = 0; $i < count($directions); $i++) {
             $direction = $directions[$i];
-            if ($direction != $face) $this->updateAroundRedstone($pos->getSide($direction));
+            $block = $center->getSide($direction);
+            if ($block instanceof IRedstoneComponent) $block->onRedstoneUpdate();
+
+            for ($j = 0; $j < count($directions); $j++) {
+                $sideDirection = $directions[$j];
+                if (Facing::axis($direction) == Facing::AXIS_Y && Facing::axis($sideDirection) != Facing::AXIS_Y) continue;
+                if (Facing::axis($direction) != Facing::AXIS_Y && Facing::rotate($direction, Facing::AXIS_Y, true) == $sideDirection) continue;
+
+                $sideBlock = $block->getSide($sideDirection);
+                if ($sideBlock instanceof IRedstoneComponent) $sideBlock->onRedstoneUpdate();
+            }
         }
     }
 
     public function getRedstonePower(Vector3 $pos, ?int $face = null): int {
-        if ($this->level == null) throw new LogicException("Block's level property is null");
-
-        $block = $this->level->getBlock($pos);
-        return BlockPowerHelper::isNormalBlock($block) ? $this->getStrongPowered($pos) : BlockPowerHelper::getWeakPower($block, $face);
+        $block = $this->getLevel()->getBlock($pos);
+        return BlockPowerHelper::isNormalBlock($block) ? $this->getAroundStrongPower($pos) : BlockPowerHelper::getWeakPower($block, $face);
     }
 
     public function isBlockPowered(Vector3 $pos, ?int $face = null): bool {
@@ -56,20 +78,19 @@ trait RedstoneUpdateTrait {
         return $this->getRedstonePower($pos->getSide($face), $face) > 0;
     }
 
-    public function getStrongPowered(Vector3 $pos): int {
+    public function getAroundStrongPower(Vector3 $pos): int {
         $power = 0;
         $directions = Facing::ALL;
         for ($i = 0; $i < count($directions); $i++) {
             $direction = $directions[$i];
-            $power = max($power, $this->getSideStrongPowered($pos->getSide($direction), $direction));
+            $power = max($power, $this->getSideStrongPower($pos->getSide($direction), $direction));
             if ($power >= 15) return $power;
         }
 
         return $power;
     }
 
-    public function getSideStrongPowered(Vector3 $pos, int $face): int {
-        if ($this->level == null) throw new LogicException("Block's level property is null");
-        return BlockPowerHelper::getStrongPower($this->level->getBlock($pos), $face);
+    public function getSideStrongPower(Vector3 $pos, int $face): int {
+        return BlockPowerHelper::getStrongPower($this->getLevel()->getBlock($pos), $face);
     }
 }

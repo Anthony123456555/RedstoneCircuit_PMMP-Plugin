@@ -44,7 +44,7 @@ class BlockRedstoneWire extends Flowable implements IRedstoneComponent {
 
     public function onBreak(Item $item, Player $player = null) : bool {
         $bool = parent::onBreak($item, $player);
-        $this->updateAroundDiodeRedstone($this);
+        $this->updateAroundStrongRedstone();
         return $bool;
     }
 
@@ -115,6 +115,6 @@ class BlockRedstoneWire extends Flowable implements IRedstoneComponent {
 
         $this->setDamage($power);
         $this->getLevel()->setBlock($this, $this);
-        $this->updateAroundDiodeRedstone($this);
+        $this->updateAroundStrongRedstone();
     }
 }
