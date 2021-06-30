@@ -24,18 +24,18 @@ class BlockStoneButton extends StoneButton implements IRedstoneComponent, IDirec
         if (!$this->canPlaceFlowable(Facing::opposite($face))) return false;
 
         $bool = parent::place($item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-        $this->updateAroundDirectionRedstone($this->getFace());
+        $this->updateAroundDirectionRedstone(Facing::opposite($this->getFace()));
         return $bool;
     }
 
     public function onBreak(Item $item, Player $player = null): bool {
         $bool = parent::onBreak($item, $player);
-        $this->updateAroundDirectionRedstone($this->getFace());
+        $this->updateAroundDirectionRedstone(Facing::opposite($this->getFace()));
         return $bool;
     }
 
     public function onNearbyBlockChange(): void {
-        if ($this->canPlaceFlowable($this->getFace())) return;
+        if ($this->canPlaceFlowable(Facing::opposite($this->getFace()))) return;
         $this->getLevel()->useBreakOn($this);
     }
 
@@ -55,8 +55,7 @@ class BlockStoneButton extends StoneButton implements IRedstoneComponent, IDirec
 
     public function getFace(): int {
         $damage = $this->getDamage();
-        if (8 <= $damage) $damage -= 8;
-        return Facing::opposite($damage);
+        return 8 <= $damage ? $damage - 8 : $damage;
     }
 
     private function toggleButton(bool $toggle): void {
@@ -67,11 +66,11 @@ class BlockStoneButton extends StoneButton implements IRedstoneComponent, IDirec
         $this->getLevel()->setBlock($this, $this);
         $soundId = $toggle ? LevelSoundEventPacket::SOUND_POWER_ON : LevelSoundEventPacket::SOUND_POWER_OFF;
         $this->getLevel()->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), $soundId);
-        $this->updateAroundDirectionRedstone($this->getFace());
+        $this->updateAroundDirectionRedstone(Facing::opposite($this->getFace()));
     }
 
     public function getStrongPower(int $face): int {
-        return $face == Facing::opposite($this->getFace()) && $this->isPowerSource() ? 15 : 0;
+        return $face == $this->getFace() && $this->isPowerSource() ? 15 : 0;
     }
 
     public function getWeakPower(int $face): int {
