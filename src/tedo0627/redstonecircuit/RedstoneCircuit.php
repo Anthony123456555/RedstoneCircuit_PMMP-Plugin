@@ -8,6 +8,8 @@ use tedo0627\redstonecircuit\block\mechanism\BlockRedstoneLampLit;
 use tedo0627\redstonecircuit\block\power\BlockRedstone;
 use tedo0627\redstonecircuit\block\power\BlockStoneButton;
 use tedo0627\redstonecircuit\block\power\BlockWoodenButton;
+use tedo0627\redstonecircuit\block\transmission\BlockRedstoneRepeaterPowered;
+use tedo0627\redstonecircuit\block\transmission\BlockRedstoneRepeaterUnpowered;
 use tedo0627\redstonecircuit\block\transmission\BlockRedstoneWire;
 
 class RedstoneCircuit extends PluginBase {
@@ -25,6 +27,8 @@ class RedstoneCircuit extends PluginBase {
         $loader->addBlock(new BlockWoodenButton(), "button");
 
         // transmission
+        $loader->addBlock(new BlockRedstoneRepeaterPowered(), "repeater");
+        $loader->addBlock(new BlockRedstoneRepeaterUnpowered(), "repeater");
         $loader->addBlock(new BlockRedstoneWire());
 
         $config = new BlockLoadConfig($this, $loader);

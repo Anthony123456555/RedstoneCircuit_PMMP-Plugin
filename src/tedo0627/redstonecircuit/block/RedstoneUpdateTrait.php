@@ -58,6 +58,18 @@ trait RedstoneUpdateTrait {
         }
     }
 
+    public function updateDiodeRedstone(int $direction): void {
+        $block = $this->getBlock();
+        $sideBlock = $block->getSide($direction);
+        if ($sideBlock instanceof IRedstoneComponent) $sideBlock->onRedstoneUpdate();
+
+        $directions = Facing::ALL;
+        for ($i = 0; $i < count($directions); $i++) {
+            $aroundBlock = $sideBlock->getSide($directions[$i]);
+            if ($aroundBlock instanceof IRedstoneComponent) $aroundBlock->onRedstoneUpdate();
+        }
+    }
+
     public function getRedstonePower(Vector3 $pos, ?int $face = null): int {
         $block = $this->getLevel()->getBlock($pos);
         return BlockPowerHelper::isNormalBlock($block) ? $this->getAroundStrongPower($pos) : BlockPowerHelper::getWeakPower($block, $face);

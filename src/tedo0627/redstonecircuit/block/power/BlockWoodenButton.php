@@ -13,12 +13,13 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use tedo0627\redstonecircuit\block\FlowablePlaceTrait;
+use tedo0627\redstonecircuit\block\IDirectional;
 use tedo0627\redstonecircuit\block\IRedstoneComponent;
 use tedo0627\redstonecircuit\block\RedstoneComponentTrait;
 use tedo0627\redstonecircuit\block\RedstoneUpdateTrait;
 use tedo0627\redstonecircuit\Facing;
 
-class BlockWoodenButton extends WoodenButton implements IRedstoneComponent {
+class BlockWoodenButton extends WoodenButton implements IRedstoneComponent, IDirectional {
     use FlowablePlaceTrait;
     use RedstoneComponentTrait;
     use RedstoneUpdateTrait;
@@ -73,7 +74,7 @@ class BlockWoodenButton extends WoodenButton implements IRedstoneComponent {
         return true;
     }
 
-    private function getFace(): int {
+    public function getFace(): int {
         $damage = $this->getDamage();
         if (8 <= $damage) $damage -= 8;
         return Facing::opposite($damage);

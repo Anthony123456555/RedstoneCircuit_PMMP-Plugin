@@ -7,7 +7,7 @@ use pocketmine\block\Block;
 class BlockPowerHelper {
 
     public static function isNormalBlock(Block $block): bool {
-        return !$block->isTransparent() && $block->isSolid();
+        return !$block->isTransparent() && $block->isSolid() && !self::isPowerSource($block);
     }
 
     public static function getStrongPower(Block $block, int $face): int {
