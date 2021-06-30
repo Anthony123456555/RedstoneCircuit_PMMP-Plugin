@@ -27,7 +27,7 @@ trait RedstoneUpdateTrait {
         $directions = Facing::ALL;
         for ($i = 0; $i < count($directions); $i++) {
             $direction = $directions[$i];
-            if ($ignoreDirection == $direction) continue;
+            if ($ignoreDirection === $direction) continue;
 
             $block = $center->getSide($direction);
             if ($block instanceof IRedstoneComponent) $block->onRedstoneUpdate();
@@ -79,7 +79,7 @@ trait RedstoneUpdateTrait {
         $directions = Facing::ALL;
         for ($i = 0; $i < count($directions); $i++) {
             $direction = $directions[$i];
-            if ($face == $direction) continue;
+            if ($face === $direction) continue;
             if ($this->isSidePowered($pos, $direction)) return true;
         }
 

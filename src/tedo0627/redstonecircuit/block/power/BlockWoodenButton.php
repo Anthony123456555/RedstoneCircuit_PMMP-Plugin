@@ -57,7 +57,6 @@ class BlockWoodenButton extends WoodenButton implements IRedstoneComponent, IDir
     public function onActivate(Item $item, Player $player = null): bool {
         if ($this->isPowerSource()) return true;
 
-        echo "damage" . $this->getDamage() . "\n";
         $this->toggleButton(true);
         $this->getLevel()->scheduleDelayedBlockUpdate($this, 30);
         return true;
@@ -88,7 +87,6 @@ class BlockWoodenButton extends WoodenButton implements IRedstoneComponent, IDir
         $this->getLevel()->setBlock($this, $this);
         $soundId = $toggle ? LevelSoundEventPacket::SOUND_POWER_ON : LevelSoundEventPacket::SOUND_POWER_OFF;
         $this->getLevel()->broadcastLevelSoundEvent($this->add(0.5, 0.5, 0.5), $soundId);
-        echo "update " . Facing::opposite($this->getFace()) . "\n";
         $this->updateAroundDirectionRedstone(Facing::opposite($this->getFace()));
     }
 
